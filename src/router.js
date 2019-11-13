@@ -1,8 +1,7 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import Home from './views/Home.vue'
+import Vue from 'vue';
+import Router from 'vue-router';
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
   mode: 'history',
@@ -11,15 +10,51 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: () => import('./views/Home.vue'),
+      beforeEnter: (to, from, next) => {
+        const isAuthenticated = localStorage.getItem('isAuthenticated');
+
+        // if (isAuthenticated) return next('/dashboard');
+        return next();
+      }
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
+      path: '/dashboard',
+      name: 'dashboard',
+      component: () => import('./components/Account/Dashboard.vue'),
+      beforeEnter: (to, from, next) => {
+        const isAuthenticated = localStorage.getItem('isAuthenticated');
+
+        if (isAuthenticated === "true") return next();
+        return next('/');
+      }
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: () => import('./components/Account/Settings.vue'),
+      beforeEnter: (to, from, next) => {
+        const isAuthenticated = localStorage.getItem('isAuthenticated');
+
+        if (isAuthenticated === "true") return next();
+        return next('/');
+      }
+    },
+    {
+      path: '/images',
+      name: 'images',
+      component: () => import('./components/Account/Gallery.vue'),
+      meta: { 
+        requiresAuth: true
+      },
+      beforeEnter: (to, from, next) => {
+        const isAuthenticated = localStorage.getItem('isAuthenticated');
+
+        if (isAuthenticated === "true") return next();
+        return next({
+          path: '/'
+        });
+      }
     }
   ]
-})
+});

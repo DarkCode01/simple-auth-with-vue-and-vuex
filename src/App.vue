@@ -1,25 +1,28 @@
 <template>
   <v-app>
-    <NavBar />
-
-    <v-content>
-      <HelloWorld/>
-    </v-content>
+    <NavBarDashboard  v-if="isAuth()" />
+    <NavBar v-else />
+    
+    <router-view>
+    </router-view>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
+import { mapGetters } from 'vuex';
 import NavBar from './components/NavBar';
+import NavBarDashboard from './components/Account/NavBar';
 
 export default {
   name: 'App',
+  methods: {
+    isAuth: () => {
+      return localStorage.getItem('isAuthenticated');
+    }
+  },
   components: {
     NavBar,
-    HelloWorld
-  },
-  data: () => ({
-    //
-  }),
+    NavBarDashboard
+  }
 };
 </script>
